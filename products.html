@@ -57,21 +57,48 @@ id="searchInput"
 placeholder="ابحث عن منتج..."
 onkeyup="searchProducts()">
 
-</div><div class="cards" id="productsContainer"></div></section><script>
+</div><div class="cards" id="productsContainer"></div></section><script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCxSrtYSCGI9EQWZyPUFqKU3baqOuWO5gY",
+authDomain: "magican-5bbcd.firebaseapp.com",
+projectId: "magican-5bbcd",
+storageBucket: "magican-5bbcd.firebasestorage.app",
+messagingSenderId: "865515431997",
+appId: "1:865515431997:web:833a104afa91c51c092254"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 let cart = [];
 
-let products =
-JSON.parse(localStorage.getItem("products")) || [];
+async function loadProducts(){
 
-function renderProducts(){
-
-let container =
+const container =
 document.getElementById("productsContainer");
+
+container.innerHTML =
+"<p>جاري تحميل المنتجات...</p>";
+
+try{
+
+const querySnapshot =
+await getDocs(collection(db,"products"));
 
 container.innerHTML = "";
 
-products.forEach(product => {
+querySnapshot.forEach((doc)=>{
+
+const product = doc.data();
 
 container.innerHTML += `
 <div class="card product-card">
@@ -81,10 +108,10 @@ container.innerHTML += `
 <h3>${product.name}</h3>
 
 <p class="product-price">
-${product.price}$
+${product.price || ""}
 </p>
 
-<button onclick="addToCart(this)">
+<button onclick="addToCart('${product.name}')">
 إضافة إلى السلة
 </button>
 
@@ -93,67 +120,77 @@ ${product.price}$
 
 });
 
+}catch(error){
+
+container.innerHTML =
+"<p>حدث خطأ أثناء تحميل المنتجات</p>";
+
+console.error(error);
+
 }
 
-function searchProducts(){
+}
 
-let input =
+window.searchProducts = function(){
+
+const input =
 document.getElementById("searchInput")
 .value.toLowerCase();
 
-let cards =
-document.querySelectorAll(".product-card");
+document
+.querySelectorAll(".product-card")
+.forEach(card=>{
 
-cards.forEach(card => {
-
-let title =
+const title =
 card.querySelector("h3")
 .textContent.toLowerCase();
 
 card.style.display =
-title.includes(input) ? "block" : "none";
+title.includes(input)
+? "block"
+: "none";
 
 });
 
-}
+};
 
-function addToCart(button){
+window.addToCart = function(name){
 
-let productName =
-button.parentElement.querySelector("h3").textContent;
+if(cart.includes(name)){
 
-if(cart.includes(productName)){
-
-alert("هذا المنتج موجود بالفعل في السلة");
+alert("المنتج موجود بالفعل");
 
 return;
 
 }
 
-cart.push(productName);
+cart.push(name);
 
 updateCart();
 
-}
+};
 
 function updateCart(){
 
-let cartList =
+const cartList =
 document.getElementById("cartList");
 
-let cartCount =
+const cartCount =
 document.getElementById("cartCount");
 
 cartList.innerHTML = "";
 
-cart.forEach((product,index)=>{
+cart.forEach((item,index)=>{
 
-let li =
+const li =
 document.createElement("li");
 
 li.innerHTML =
-product +
-' <button class="remove-btn" onclick="removeFromCart('+index+')">❌</button>';
+`${item}
+<button class="remove-btn"
+onclick="removeFromCart(${index})">
+❌
+</button>`;
 
 cartList.appendChild(li);
 
@@ -164,15 +201,15 @@ cartCount.textContent =
 
 }
 
-function removeFromCart(index){
+window.removeFromCart = function(index){
 
 cart.splice(index,1);
 
 updateCart();
 
-}
+};
 
-function sendWhatsAppOrder(){
+window.sendWhatsAppOrder = function(){
 
 if(cart.length === 0){
 
@@ -185,20 +222,20 @@ return;
 let message =
 "مرحباً، أرغب بطلب المنتجات التالية:%0A%0A";
 
-cart.forEach(product => {
+cart.forEach(item=>{
 
-message += "• " + product + "%0A";
+message += "• " + item + "%0A";
 
 });
 
 window.open(
-"https://wa.me/963943641243?text=" + message,
+"https://wa.me/963943641243?text=" +
+message,
 "_blank"
 );
 
-}
+};
 
-renderProducts();
+loadProducts();
 
-</script></body>
-</html>
+</script></body></html>

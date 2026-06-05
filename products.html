@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>الأجهزة والإكسسوارات | MAGICAN</title><link rel="stylesheet" href="style.css"><style>
+
+.search-box{
+max-width:500px;
+margin:20px auto;
+}
+
+.search-box input{
+width:100%;
+padding:15px;
+border:none;
+border-radius:12px;
+font-size:16px;
+background:#07152f;
+color:white;
+}
+
+.product-price{
+font-size:20px;
+font-weight:bold;
+color:#0a84ff;
+margin:10px 0;
+}
+
+#cartBox{
+margin-bottom:30px;
+}
+
+#cartList{
+list-style:none;
+padding:0;
+}
+
+#cartList li{
+margin:8px 0;
+}
+
+.remove-btn{
+margin-right:10px;
+cursor:pointer;
+}
+
+</style></head><body><header><div class="logo">
+<img src="images/logo.png" alt="MAGICAN Logo">
+</div><nav>
+<a href="index.html">الرئيسية</a>
+<a href="products.html">الأجهزة والإكسسوارات</a>
+</nav></header><section class="services"><h2>الأجهزة والإكسسوارات</h2><div id="cartBox" class="card"><h3>🛒 سلة المشتريات</h3><ul id="cartList"></ul><p id="cartCount">
+عدد المنتجات: 0
+</p><button onclick="sendWhatsAppOrder()">
+إرسال الطلب عبر واتساب
+</button></div><div class="search-box"><input
+type="text"
+id="searchInput"
+placeholder="ابحث عن منتج..."
+onkeyup="searchProducts()">
+
+</div><div class="cards" id="productsContainer"></div></section><script>
+
+let cart = [];
+
+let products =
+JSON.parse(localStorage.getItem("products")) || [];
+
+function renderProducts(){
+
+let container =
+document.getElementById("productsContainer");
+
+container.innerHTML = "";
+
+products.forEach(product => {
+
+container.innerHTML += `
+<div class="card product-card">
+
+<img src="images/playstation.png">
+
+<h3>${product.name}</h3>
+
+<p class="product-price">
+${product.price}$
+</p>
+
+<button onclick="addToCart(this)">
+إضافة إلى السلة
+</button>
+
+</div>
+`;
+
+});
+
+}
+
+function searchProducts(){
+
+let input =
+document.getElementById("searchInput")
+.value.toLowerCase();
+
+let cards =
+document.querySelectorAll(".product-card");
+
+cards.forEach(card => {
+
+let title =
+card.querySelector("h3")
+.textContent.toLowerCase();
+
+card.style.display =
+title.includes(input) ? "block" : "none";
+
+});
+
+}
+
+function addToCart(button){
+
+let productName =
+button.parentElement.querySelector("h3").textContent;
+
+if(cart.includes(productName)){
+
+alert("هذا المنتج موجود بالفعل في السلة");
+
+return;
+
+}
+
+cart.push(productName);
+
+updateCart();
+
+}
+
+function updateCart(){
+
+let cartList =
+document.getElementById("cartList");
+
+let cartCount =
+document.getElementById("cartCount");
+
+cartList.innerHTML = "";
+
+cart.forEach((product,index)=>{
+
+let li =
+document.createElement("li");
+
+li.innerHTML =
+product +
+' <button class="remove-btn" onclick="removeFromCart('+index+')">❌</button>';
+
+cartList.appendChild(li);
+
+});
+
+cartCount.textContent =
+"عدد المنتجات: " + cart.length;
+
+}
+
+function removeFromCart(index){
+
+cart.splice(index,1);
+
+updateCart();
+
+}
+
+function sendWhatsAppOrder(){
+
+if(cart.length === 0){
+
+alert("السلة فارغة");
+
+return;
+
+}
+
+let message =
+"مرحباً، أرغب بطلب المنتجات التالية:%0A%0A";
+
+cart.forEach(product => {
+
+message += "• " + product + "%0A";
+
+});
+
+window.open(
+"https://wa.me/963943641243?text=" + message,
+"_blank"
+);
+
+}
+
+renderProducts();
+
+</script></body>
+</html>

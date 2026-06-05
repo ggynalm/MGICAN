@@ -1,241 +1,48 @@
-<!DOCTYPE html><html lang="ar" dir="rtl"><head>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>الأجهزة والإكسسوارات | MAGICAN</title><link rel="stylesheet" href="style.css"><style>
-
-.search-box{
-max-width:500px;
-margin:20px auto;
-}
-
-.search-box input{
-width:100%;
-padding:15px;
-border:none;
-border-radius:12px;
-font-size:16px;
-background:#07152f;
-color:white;
-}
-
-.product-price{
-font-size:20px;
-font-weight:bold;
-color:#0a84ff;
-margin:10px 0;
-}
-
-#cartBox{
-margin-bottom:30px;
-}
-
-#cartList{
-list-style:none;
-padding:0;
-}
-
-#cartList li{
-margin:8px 0;
-}
-
-.remove-btn{
-margin-right:10px;
-cursor:pointer;
-}
-
-</style></head><body><header><div class="logo">
-<img src="images/logo.png" alt="MAGICAN Logo">
-</div><nav>
-<a href="index.html">الرئيسية</a>
-<a href="products.html">الأجهزة والإكسسوارات</a>
-</nav></header><section class="services"><h2>الأجهزة والإكسسوارات</h2><div id="cartBox" class="card"><h3>🛒 سلة المشتريات</h3><ul id="cartList"></ul><p id="cartCount">
-عدد المنتجات: 0
-</p><button onclick="sendWhatsAppOrder()">
-إرسال الطلب عبر واتساب
-</button></div><div class="search-box"><input
-type="text"
-id="searchInput"
-placeholder="ابحث عن منتج..."
-onkeyup="searchProducts()">
-
-</div><div class="cards" id="productsContainer"></div></section><script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-getFirestore,
-collection,
-getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-apiKey: "AIzaSyCxSrtYSCGI9EQWZyPUFqKU3baqOuWO5gY",
-authDomain: "magican-5bbcd.firebaseapp.com",
-projectId: "magican-5bbcd",
-storageBucket: "magican-5bbcd.firebasestorage.app",
-messagingSenderId: "865515431997",
-appId: "1:865515431997:web:833a104afa91c51c092254"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-let cart = [];
-
-async function loadProducts(){
-
-const container =
-document.getElementById("productsContainer");
-
-container.innerHTML =
-"<p>جاري تحميل المنتجات...</p>";
-
-try{
-
-const querySnapshot =
-await getDocs(collection(db,"products"));
-
-container.innerHTML = "";
-
-querySnapshot.forEach((doc)=>{
-
-const product = doc.data();
-
-container.innerHTML += `
-<div class="card product-card">
-
-<img src="images/playstation.png">
-
-<h3>${product.name}</h3>
-
-<p class="product-price">
-${product.price || ""}
-</p>
-
-<button onclick="addToCart('${product.name}')">
-إضافة إلى السلة
-</button>
-
-</div>
-`;
-
-});
-
-}catch(error){
-
-container.innerHTML =
-"<p>حدث خطأ أثناء تحميل المنتجات</p>";
-
-console.error(error);
-
-}
-
-}
-
-window.searchProducts = function(){
-
-const input =
-document.getElementById("searchInput")
-.value.toLowerCase();
-
-document
-.querySelectorAll(".product-card")
-.forEach(card=>{
-
-const title =
-card.querySelector("h3")
-.textContent.toLowerCase();
-
-card.style.display =
-title.includes(input)
-? "block"
-: "none";
-
-});
-
-};
-
-window.addToCart = function(name){
-
-if(cart.includes(name)){
-
-alert("المنتج موجود بالفعل");
-
-return;
-
-}
-
-cart.push(name);
-
-updateCart();
-
-};
-
-function updateCart(){
-
-const cartList =
-document.getElementById("cartList");
-
-const cartCount =
-document.getElementById("cartCount");
-
-cartList.innerHTML = "";
-
-cart.forEach((item,index)=>{
-
-const li =
-document.createElement("li");
-
-li.innerHTML =
-`${item}
-<button class="remove-btn"
-onclick="removeFromCart(${index})">
-❌
-</button>`;
-
-cartList.appendChild(li);
-
-});
-
-cartCount.textContent =
-"عدد المنتجات: " + cart.length;
-
-}
-
-window.removeFromCart = function(index){
-
-cart.splice(index,1);
-
-updateCart();
-
-};
-
-window.sendWhatsAppOrder = function(){
-
-if(cart.length === 0){
-
-alert("السلة فارغة");
-
-return;
-
-}
-
-let message =
-"مرحباً، أرغب بطلب المنتجات التالية:%0A%0A";
-
-cart.forEach(item=>{
-
-message += "• " + item + "%0A";
-
-});
-
-window.open(
-"https://wa.me/963943641243?text=" +
-message,
-"_blank"
-);
-
-};
-
-loadProducts();
-
-</script></body></html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأجهزة والإكسسوارات | MAGICAN</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.search-box{max-width:500px;margin:20px auto;}
+.search-box input{width:100%;padding:15px;border:none;border-radius:12px;font-size:16px;background:#07152f;color:white;}
+.product-price{font-size:20px;font-weight:bold;color:#0a84ff;margin:10px 0;}
+#cartBox{margin-bottom:30px;}
+#cartList{list-style:none;padding:0;}
+#cartList li{margin:8px 0;}
+.remove-btn{margin-right:10px;cursor:pointer;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <img src="images/logo.png" alt="MAGICAN Logo">
+  </div>
+  <nav>
+    <a href="index.html">الرئيسية</a>
+    <a href="products.html">الأجهزة والإكسسوارات</a>
+  </nav>
+</header>
+
+<section class="services">
+  <h2>الأجهزة والإكسسوارات</h2>
+
+  <div id="cartBox" class="card">
+    <h3>🛒 سلة المشتريات</h3>
+    <ul id="cartList"></ul>
+    <p id="cartCount">عدد المنتجات: 0</p>
+    <button onclick="sendWhatsAppOrder()">إرسال الطلب عبر واتساب</button>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="ابحث عن منتج..." onkeyup="searchProducts()">
+  </div>
+
+  <div class="cards" id="productsContainer"></div>
+</section>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
